@@ -546,6 +546,188 @@
     @keyframes flashUp   { 0%,100%{ background: transparent; } 50%{ background: rgba(232,54,59,.25); } }
     @keyframes flashDown { 0%,100%{ background: transparent; } 50%{ background: rgba(0,184,122,.25); } }
 
+    /* ===== 登录/注册模态窗口 ===== */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 2000;
+      background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--dark2); border: 1px solid var(--border);
+      border-radius: 20px; width: 420px; max-width: 92vw;
+      max-height: 90vh; overflow-y: auto;
+      padding: 40px 36px; position: relative;
+      animation: modalIn .3s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(30px) scale(.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-close {
+      position: absolute; top: 16px; right: 18px;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--dark3); border: 1px solid var(--border);
+      color: var(--muted); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+    }
+    .modal-close:hover { background: rgba(232,54,59,.2); color: var(--red); border-color: rgba(232,54,59,.4); }
+    .modal-logo {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--red), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 900; color: #fff; margin: 0 auto 18px;
+    }
+    .modal-title { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+    .modal-subtitle { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+
+    /* 表单面板切换 */
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+
+    .auth-group { margin-bottom: 18px; }
+    .auth-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+    .auth-input-wrap {
+      position: relative; display: flex; align-items: center;
+    }
+    .auth-input-wrap .input-icon {
+      position: absolute; left: 14px; font-size: 16px; color: var(--muted); pointer-events: none;
+    }
+    .auth-input {
+      width: 100%; padding: 12px 14px 12px 42px;
+      background: var(--dark3); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: 14px;
+      font-family: inherit; outline: none; transition: all .2s;
+    }
+    .auth-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88,166,255,.15); }
+    .auth-input.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(232,54,59,.15); }
+    .auth-input.success { border-color: var(--green); }
+    .auth-error { font-size: 12px; color: var(--red); margin-top: 4px; display: none; }
+    .auth-error.show { display: block; }
+
+    /* 验证码行 */
+    .auth-row { display: flex; gap: 12px; align-items: flex-start; }
+    .auth-row .auth-group { flex: 1; }
+    .sms-btn {
+      flex-shrink: 0; padding: 12px 16px; margin-top: 22px;
+      background: var(--dark3); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--accent); font-size: 13px;
+      cursor: pointer; white-space: nowrap; transition: all .2s;
+    }
+    .sms-btn:hover:not(:disabled) { border-color: var(--accent); }
+    .sms-btn:disabled { color: var(--muted); cursor: not-allowed; }
+
+    /* 密码强度条 */
+    .pwd-strength { display: flex; gap: 4px; margin-top: 6px; }
+    .pwd-bar { height: 3px; flex: 1; border-radius: 2px; background: var(--dark3); transition: background .3s; }
+    .pwd-bar.weak { background: var(--red); }
+    .pwd-bar.medium { background: var(--gold); }
+    .pwd-bar.strong { background: var(--green); }
+    .pwd-tip { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    /* 复选框 */
+    .auth-checkbox {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 20px; cursor: pointer;
+    }
+    .auth-checkbox input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: var(--red); cursor: pointer;
+    }
+    .auth-checkbox span { font-size: 13px; color: var(--muted); }
+    .auth-checkbox a { color: var(--accent); text-decoration: none; font-size: 13px; }
+    .auth-checkbox a:hover { text-decoration: underline; }
+
+    /* 提交按钮 */
+    .auth-submit {
+      width: 100%; padding: 13px;
+      background: linear-gradient(90deg, var(--red), #c0392b);
+      border: none; border-radius: 10px; color: #fff;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: all .25s;
+    }
+    .auth-submit:hover { opacity: .85; transform: translateY(-1px); }
+    .auth-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .auth-submit.loading { position: relative; color: transparent; }
+    .auth-submit.loading::after {
+      content: ''; position: absolute; top: 50%; left: 50%;
+      width: 20px; height: 20px; margin: -10px 0 0 -10px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 分割线 */
+    .auth-divider {
+      display: flex; align-items: center; gap: 14px; margin: 24px 0;
+      color: var(--muted); font-size: 12px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* 社交登录 */
+    .social-btns { display: flex; gap: 12px; justify-content: center; }
+    .social-btn {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--dark3); border: 1px solid var(--border);
+      font-size: 20px; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .social-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+    /* 切换登录/注册链接 */
+    .auth-switch { text-align: center; margin-top: 24px; font-size: 13px; color: var(--muted); }
+    .auth-switch a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+    .auth-switch a:hover { text-decoration: underline; }
+
+    /* ---- 用户下拉菜单（登录后） ---- */
+    .user-menu-wrap { position: relative; }
+    .user-avatar-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 5px 12px; border-radius: 20px;
+      background: var(--dark3); border: 1px solid var(--border);
+      cursor: pointer; transition: all .2s; color: var(--text);
+    }
+    .user-avatar-btn:hover { border-color: var(--accent); }
+    .user-avatar-sm {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--gold));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 800; color: #fff;
+    }
+    .user-name { font-size: 13px; font-weight: 500; }
+    .user-dropdown {
+      display: none; position: absolute; top: calc(100% + 8px); right: 0;
+      width: 200px; background: var(--dark2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px; z-index: 1100;
+      box-shadow: 0 12px 32px rgba(0,0,0,.4);
+    }
+    .user-dropdown.active { display: block; animation: modalIn .2s ease; }
+    .user-dropdown-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 8px;
+      font-size: 13px; color: var(--text); cursor: pointer;
+      transition: background .2s;
+    }
+    .user-dropdown-item:hover { background: var(--dark3); }
+    .user-dropdown-item .dd-icon { font-size: 16px; width: 20px; text-align: center; }
+    .user-dropdown-divider { height: 1px; background: var(--border); margin: 6px 8px; }
+    .user-dropdown-item.danger { color: var(--red); }
+
+    /* 成功提示 */
+    .auth-success {
+      display: none; text-align: center; padding: 20px 0;
+    }
+    .auth-success.active { display: block; }
+    .auth-success-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: rgba(0,184,122,.15); margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px; color: var(--green);
+    }
+    .auth-success h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .auth-success p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
     /* ===== 响应式 ===== */
     @media (max-width: 900px) {
       nav { padding: 0 20px; }
@@ -584,9 +766,25 @@
       <a href="#news">投资资讯</a>
       <a href="#contact">联系我们</a>
     </div>
-    <div class="nav-btns">
-      <a href="#contact" class="btn-outline">登录</a>
-      <a href="#contact" class="btn-primary">免费注册</a>
+    <div class="nav-btns" id="navBtns">
+      <a href="javascript:void(0)" class="btn-outline" onclick="openModal('login')">登录</a>
+      <a href="javascript:void(0)" class="btn-primary" onclick="openModal('register')">免费注册</a>
+    </div>
+    <div class="user-menu-wrap" id="userMenuWrap" style="display:none;">
+      <div class="user-avatar-btn" onclick="toggleUserMenu()">
+        <div class="user-avatar-sm" id="userAvatarSm">U</div>
+        <span class="user-name" id="userDisplayName">用户</span>
+        <span style="font-size:10px;color:var(--muted)">▼</span>
+      </div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-item" onclick="alert('个人中心功能开发中...')"><span class="dd-icon">👤</span>个人中心</div>
+        <div class="user-dropdown-item" onclick="alert('我的订阅功能开发中...')"><span class="dd-icon">💎</span>我的订阅</div>
+        <div class="user-dropdown-item" onclick="alert('自选股功能开发中...')"><span class="dd-icon">⭐</span>我的自选</div>
+        <div class="user-dropdown-item" onclick="alert('消息通知功能开发中...')"><span class="dd-icon">🔔</span>消息通知</div>
+        <div class="user-dropdown-item" onclick="alert('账户设置功能开发中...')"><span class="dd-icon">⚙️</span>账户设置</div>
+        <div class="user-dropdown-divider"></div>
+        <div class="user-dropdown-item danger" onclick="doLogout()"><span class="dd-icon">🚪</span>退出登录</div>
+      </div>
     </div>
   </div>
 </nav>
@@ -617,7 +815,7 @@
         让每一位普通投资者都能享受专业级的股票咨询体验。
       </p>
       <div class="hero-actions">
-        <a href="#contact" class="btn-lg btn-lg-red">🚀 立即免费注册</a>
+        <a href="javascript:void(0)" class="btn-lg btn-lg-red" onclick="openModal('register')">🚀 立即免费注册</a>
         <a href="#features" class="btn-lg btn-lg-ghost">📊 了解功能</a>
       </div>
       <div class="hero-stats">
@@ -1088,6 +1286,176 @@
   </div>
 </footer>
 
+<!-- ===== 登录/注册模态窗口 ===== -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+
+    <!-- 登录面板 -->
+    <div class="auth-panel active" id="loginPanel">
+      <div class="modal-logo">韭</div>
+      <div class="modal-title">欢迎回来</div>
+      <div class="modal-subtitle">登录韭菜赢赢，开启专业投资之旅</div>
+      <form onsubmit="handleLogin(event)">
+        <div class="auth-group">
+          <label>手机号</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="tel" class="auth-input" id="loginPhone" placeholder="请输入手机号" maxlength="11" autocomplete="tel" />
+          </div>
+          <div class="auth-error" id="loginPhoneErr">请输入正确的手机号</div>
+        </div>
+        <div class="auth-group">
+          <label>密码</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" class="auth-input" id="loginPwd" placeholder="请输入密码" autocomplete="current-password" />
+          </div>
+          <div class="auth-error" id="loginPwdErr">密码不能为空</div>
+        </div>
+        <div class="auth-row" style="justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <label class="auth-checkbox" style="margin-bottom:0;">
+            <input type="checkbox" id="rememberLogin" checked />
+            <span>7天内免登录</span>
+          </label>
+          <a href="javascript:void(0)" style="font-size:13px;color:var(--accent);text-decoration:none;" onclick="switchPanel('forgot')">忘记密码？</a>
+        </div>
+        <button type="submit" class="auth-submit" id="loginBtn">登 录</button>
+      </form>
+      <div class="auth-divider">其他登录方式</div>
+      <div class="social-btns">
+        <button class="social-btn" title="微信登录" onclick="alert('微信登录功能开发中')">💬</button>
+        <button class="social-btn" title="QQ登录" onclick="alert('QQ登录功能开发中')">🐧</button>
+        <button class="social-btn" title="支付宝登录" onclick="alert('支付宝登录功能开发中')">🔵</button>
+      </div>
+      <div class="auth-switch">
+        还没有账号？<a onclick="switchPanel('register')">立即注册</a>
+      </div>
+    </div>
+
+    <!-- 注册面板 -->
+    <div class="auth-panel" id="registerPanel">
+      <div class="modal-logo">韭</div>
+      <div class="modal-title">创建账号</div>
+      <div class="modal-subtitle">30秒完成注册，免费体验专业投资服务</div>
+      <form onsubmit="handleRegister(event)">
+        <div class="auth-group">
+          <label>手机号</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="tel" class="auth-input" id="regPhone" placeholder="请输入手机号" maxlength="11" autocomplete="tel" />
+          </div>
+          <div class="auth-error" id="regPhoneErr">请输入正确的11位手机号</div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-group">
+            <label>验证码</label>
+            <div class="auth-input-wrap">
+              <span class="input-icon">✉️</span>
+              <input type="text" class="auth-input" id="regCode" placeholder="6位验证码" maxlength="6" autocomplete="one-time-code" />
+            </div>
+            <div class="auth-error" id="regCodeErr">请输入验证码</div>
+          </div>
+          <button type="button" class="sms-btn" id="smsBtn" onclick="sendSmsCode()">获取验证码</button>
+        </div>
+        <div class="auth-group">
+          <label>设置密码</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" class="auth-input" id="regPwd" placeholder="6-20位，含字母和数字" autocomplete="new-password" oninput="checkPwdStrength()" />
+          </div>
+          <div class="pwd-strength">
+            <div class="pwd-bar" id="pwdBar1"></div>
+            <div class="pwd-bar" id="pwdBar2"></div>
+            <div class="pwd-bar" id="pwdBar3"></div>
+          </div>
+          <div class="pwd-tip" id="pwdTip">密码长度6-20位</div>
+          <div class="auth-error" id="regPwdErr">密码格式不正确</div>
+        </div>
+        <div class="auth-group">
+          <label>确认密码</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" class="auth-input" id="regPwd2" placeholder="再次输入密码" autocomplete="new-password" />
+          </div>
+          <div class="auth-error" id="regPwd2Err">两次密码不一致</div>
+        </div>
+        <div class="auth-group">
+          <label>昵称 <span style="color:var(--muted)">(选填)</span></label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">😊</span>
+            <input type="text" class="auth-input" id="regNickname" placeholder="给自己取个名字" maxlength="20" autocomplete="nickname" />
+          </div>
+        </div>
+        <label class="auth-checkbox">
+          <input type="checkbox" id="agreeTerms" />
+          <span>我已阅读并同意 <a href="javascript:void(0)" onclick="alert('用户协议页面开发中')">《用户服务协议》</a> 和 <a href="javascript:void(0)" onclick="alert('隐私政策页面开发中')">《隐私政策》</a></span>
+        </label>
+        <button type="submit" class="auth-submit" id="regBtn">注 册</button>
+      </form>
+      <div class="auth-switch">
+        已有账号？<a onclick="switchPanel('login')">立即登录</a>
+      </div>
+    </div>
+
+    <!-- 忘记密码面板 -->
+    <div class="auth-panel" id="forgotPanel">
+      <div class="modal-logo">🔑</div>
+      <div class="modal-title">找回密码</div>
+      <div class="modal-subtitle">通过手机验证码重置您的密码</div>
+      <form onsubmit="handleResetPwd(event)">
+        <div class="auth-group">
+          <label>手机号</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">📱</span>
+            <input type="tel" class="auth-input" id="forgotPhone" placeholder="请输入注册时使用的手机号" maxlength="11" />
+          </div>
+          <div class="auth-error" id="forgotPhoneErr">请输入正确的手机号</div>
+        </div>
+        <div class="auth-row">
+          <div class="auth-group">
+            <label>验证码</label>
+            <div class="auth-input-wrap">
+              <span class="input-icon">✉️</span>
+              <input type="text" class="auth-input" id="forgotCode" placeholder="6位验证码" maxlength="6" />
+            </div>
+            <div class="auth-error" id="forgotCodeErr">请输入验证码</div>
+          </div>
+          <button type="button" class="sms-btn" id="forgotSmsBtn" onclick="sendForgotSms()">获取验证码</button>
+        </div>
+        <div class="auth-group">
+          <label>新密码</label>
+          <div class="auth-input-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" class="auth-input" id="forgotPwd" placeholder="6-20位新密码" />
+          </div>
+          <div class="auth-error" id="forgotPwdErr">密码格式不正确</div>
+        </div>
+        <button type="submit" class="auth-submit" id="forgotBtn" style="margin-top:8px;">重置密码</button>
+      </form>
+      <div class="auth-switch">
+        想起来了？<a onclick="switchPanel('login')">返回登录</a>
+      </div>
+    </div>
+
+    <!-- 注册成功面板 -->
+    <div class="auth-success" id="regSuccessPanel">
+      <div class="auth-success-icon">🎉</div>
+      <h3>注册成功！</h3>
+      <p>欢迎加入韭菜赢赢，您的专属投资之旅即将开始</p>
+      <button class="auth-submit" onclick="switchPanel('login')" style="margin-bottom:10px;">立即登录</button>
+    </div>
+
+    <!-- 密码重置成功面板 -->
+    <div class="auth-success" id="resetSuccessPanel">
+      <div class="auth-success-icon">✅</div>
+      <h3>密码重置成功！</h3>
+      <p>请使用新密码登录您的账号</p>
+      <button class="auth-submit" onclick="switchPanel('login')" style="margin-bottom:10px;">立即登录</button>
+    </div>
+  </div>
+</div>
+
 <!-- 浮动客服按钮 -->
 <button class="float-btn" title="在线客服" onclick="scrollToContact()">💬</button>
 
@@ -1418,6 +1786,419 @@
   function scrollToContact() {
     document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
   }
+
+  /* ==============================================
+   *  登录 / 注册 / 密码重置
+   *  使用 localStorage 模拟用户系统
+   * ============================================== */
+
+  const AUTH_KEY = 'jcww_users';      // 用户列表
+  const SESSION_KEY = 'jcww_session';  // 当前登录会话
+  const CODE_KEY = 'jcww_sms_code';    // 模拟验证码
+
+  // ---- 模态窗口控制 ----
+  function openModal(panel) {
+    document.getElementById('authModal').classList.add('active');
+    switchPanel(panel || 'login');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('authModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  // 点击遮罩层关闭
+  document.getElementById('authModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+  // ESC 关闭
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.getElementById('userDropdown').classList.remove('active');
+    }
+  });
+
+  // ---- 面板切换 ----
+  function switchPanel(name) {
+    document.querySelectorAll('.auth-panel, .auth-success').forEach(p => p.classList.remove('active'));
+    const panel = document.getElementById(name + 'Panel');
+    if (panel) panel.classList.add('active');
+    // 清除所有错误状态
+    document.querySelectorAll('.auth-error').forEach(e => e.classList.remove('show'));
+    document.querySelectorAll('.auth-input').forEach(e => { e.classList.remove('error','success'); });
+  }
+
+  // ---- 用户下拉菜单 ----
+  function toggleUserMenu() {
+    document.getElementById('userDropdown').classList.toggle('active');
+  }
+  document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('userMenuWrap');
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById('userDropdown').classList.remove('active');
+    }
+  });
+
+  // ---- 工具函数 ----
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || []; } catch(e) { return []; }
+  }
+  function saveUsers(users) {
+    localStorage.setItem(AUTH_KEY, JSON.stringify(users));
+  }
+  function getSession() {
+    try { return JSON.parse(localStorage.getItem(SESSION_KEY)); } catch(e) { return null; }
+  }
+  function saveSession(data) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  }
+  function clearSession() {
+    localStorage.removeItem(SESSION_KEY);
+  }
+  function isValidPhone(phone) {
+    return /^1[3-9]\d{9}$/.test(phone);
+  }
+  function isValidPwd(pwd) {
+    return pwd.length >= 6 && pwd.length <= 20 && /[a-zA-Z]/.test(pwd) && /\d/.test(pwd);
+  }
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    if (msg) el.textContent = msg;
+    el.classList.add('show');
+    const input = el.previousElementSibling.querySelector ? el.previousElementSibling.querySelector('.auth-input') : null;
+    if (!input && el.parentElement.querySelector) {
+      const inp = el.parentElement.querySelector('.auth-input');
+      if (inp) inp.classList.add('error');
+    }
+  }
+  function hideError(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+  function setBtnLoading(btn, loading) {
+    if (loading) { btn.classList.add('loading'); btn.disabled = true; }
+    else { btn.classList.remove('loading'); btn.disabled = false; }
+  }
+
+  // ---- 密码强度检测 ----
+  function checkPwdStrength() {
+    const pwd = document.getElementById('regPwd').value;
+    const bar1 = document.getElementById('pwdBar1');
+    const bar2 = document.getElementById('pwdBar2');
+    const bar3 = document.getElementById('pwdBar3');
+    const tip = document.getElementById('pwdTip');
+
+    bar1.className = 'pwd-bar';
+    bar2.className = 'pwd-bar';
+    bar3.className = 'pwd-bar';
+
+    if (pwd.length === 0) { tip.textContent = '密码长度6-20位'; return; }
+    if (pwd.length < 6) { tip.textContent = '密码太短'; tip.style.color = 'var(--red)'; return; }
+
+    let strength = 0;
+    if (pwd.length >= 8) strength++;
+    if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) strength++;
+    if (/\d/.test(pwd)) strength++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(pwd)) strength++;
+
+    if (strength <= 2) {
+      bar1.classList.add('weak');
+      tip.textContent = '弱 — 建议增加大写字母或特殊字符';
+      tip.style.color = 'var(--red)';
+    } else if (strength <= 3) {
+      bar1.classList.add('medium');
+      bar2.classList.add('medium');
+      tip.textContent = '中等 — 安全性一般';
+      tip.style.color = 'var(--gold)';
+    } else {
+      bar1.classList.add('strong');
+      bar2.classList.add('strong');
+      bar3.classList.add('strong');
+      tip.textContent = '强 — 密码安全';
+      tip.style.color = 'var(--green)';
+    }
+  }
+
+  // ---- 模拟短信验证码 ----
+  function generateCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+  }
+  let smsCountdown = 0;
+  let smsTimer = null;
+
+  function startCountdown(btnId) {
+    const btn = document.getElementById(btnId);
+    smsCountdown = 60;
+    btn.disabled = true;
+    btn.textContent = smsCountdown + 's 后重发';
+    smsTimer = setInterval(() => {
+      smsCountdown--;
+      if (smsCountdown <= 0) {
+        clearInterval(smsTimer);
+        btn.disabled = false;
+        btn.textContent = '获取验证码';
+      } else {
+        btn.textContent = smsCountdown + 's 后重发';
+      }
+    }, 1000);
+  }
+
+  function sendSmsCode() {
+    const phone = document.getElementById('regPhone').value.trim();
+    if (!isValidPhone(phone)) {
+      showError('regPhoneErr', '请输入正确的11位手机号');
+      document.getElementById('regPhone').classList.add('error');
+      return;
+    }
+    hideError('regPhoneErr');
+    document.getElementById('regPhone').classList.remove('error');
+    document.getElementById('regPhone').classList.add('success');
+
+    // 模拟发送验证码
+    const code = generateCode();
+    localStorage.setItem(CODE_KEY + '_' + phone, code);
+    alert('验证码已发送: ' + code + '\n（演示模式，实际环境中将通过短信发送）');
+    startCountdown('smsBtn');
+  }
+
+  function sendForgotSms() {
+    const phone = document.getElementById('forgotPhone').value.trim();
+    if (!isValidPhone(phone)) {
+      showError('forgotPhoneErr', '请输入正确的手机号');
+      document.getElementById('forgotPhone').classList.add('error');
+      return;
+    }
+    hideError('forgotPhoneErr');
+
+    // 检查用户是否存在
+    const users = getUsers();
+    if (!users.find(u => u.phone === phone)) {
+      showError('forgotPhoneErr', '该手机号未注册');
+      return;
+    }
+
+    const code = generateCode();
+    localStorage.setItem(CODE_KEY + '_' + phone, code);
+    alert('验证码已发送: ' + code + '\n（演示模式，实际环境中将通过短信发送）');
+    startCountdown('forgotSmsBtn');
+  }
+
+  // ---- 注册 ----
+  function handleRegister(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const phone = document.getElementById('regPhone').value.trim();
+    const code = document.getElementById('regCode').value.trim();
+    const pwd = document.getElementById('regPwd').value;
+    const pwd2 = document.getElementById('regPwd2').value;
+    const nickname = document.getElementById('regNickname').value.trim();
+    const agreed = document.getElementById('agreeTerms').checked;
+
+    // 验证手机号
+    if (!isValidPhone(phone)) {
+      showError('regPhoneErr', '请输入正确的11位手机号');
+      valid = false;
+    } else { hideError('regPhoneErr'); }
+
+    // 验证验证码
+    if (code.length !== 6) {
+      showError('regCodeErr', '请输入6位验证码');
+      valid = false;
+    } else {
+      const savedCode = localStorage.getItem(CODE_KEY + '_' + phone);
+      if (savedCode && code !== savedCode) {
+        showError('regCodeErr', '验证码错误');
+        valid = false;
+      } else { hideError('regCodeErr'); }
+    }
+
+    // 验证密码
+    if (!isValidPwd(pwd)) {
+      showError('regPwdErr', '密码需6-20位，且包含字母和数字');
+      valid = false;
+    } else { hideError('regPwdErr'); }
+
+    // 验证确认密码
+    if (pwd !== pwd2) {
+      showError('regPwd2Err', '两次密码不一致');
+      valid = false;
+    } else if (pwd2) { hideError('regPwd2Err'); }
+
+    // 验证协议
+    if (!agreed) {
+      alert('请先阅读并同意用户服务协议和隐私政策');
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    // 检查手机号是否已注册
+    const users = getUsers();
+    if (users.find(u => u.phone === phone)) {
+      showError('regPhoneErr', '该手机号已注册，请直接登录');
+      return;
+    }
+
+    // 模拟注册过程
+    const btn = document.getElementById('regBtn');
+    setBtnLoading(btn, true);
+
+    setTimeout(() => {
+      setBtnLoading(btn, false);
+
+      // 保存用户
+      const newUser = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        phone: phone,
+        password: btoa(pwd), // 简单编码（非安全方案，仅演示）
+        nickname: nickname || '韭菜新秀',
+        avatar: (nickname || '韭菜')[0].toUpperCase(),
+        createdAt: new Date().toISOString(),
+        plan: 'free'
+      };
+      users.push(newUser);
+      saveUsers(users);
+
+      // 清除验证码
+      localStorage.removeItem(CODE_KEY + '_' + phone);
+
+      // 显示成功面板
+      switchPanel('regSuccess');
+    }, 1200);
+  }
+
+  // ---- 登录 ----
+  function handleLogin(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const phone = document.getElementById('loginPhone').value.trim();
+    const pwd = document.getElementById('loginPwd').value;
+
+    if (!isValidPhone(phone)) {
+      showError('loginPhoneErr', '请输入正确的手机号');
+      valid = false;
+    } else { hideError('loginPhoneErr'); }
+
+    if (!pwd) {
+      showError('loginPwdErr', '密码不能为空');
+      valid = false;
+    } else { hideError('loginPwdErr'); }
+
+    if (!valid) return;
+
+    const btn = document.getElementById('loginBtn');
+    setBtnLoading(btn, true);
+
+    setTimeout(() => {
+      setBtnLoading(btn, false);
+
+      const users = getUsers();
+      const user = users.find(u => u.phone === phone && atob(u.password) === pwd);
+
+      if (!user) {
+        showError('loginPwdErr', '手机号或密码错误');
+        return;
+      }
+
+      // 保存会话
+      const remember = document.getElementById('rememberLogin').checked;
+      saveSession({
+        userId: user.id,
+        phone: user.phone,
+        nickname: user.nickname,
+        avatar: user.avatar,
+        plan: user.plan,
+        loginAt: new Date().toISOString(),
+        remember: remember
+      });
+
+      closeModal();
+      updateNavForLogin(user);
+    }, 800);
+  }
+
+  // ---- 密码重置 ----
+  function handleResetPwd(e) {
+    e.preventDefault();
+    let valid = true;
+
+    const phone = document.getElementById('forgotPhone').value.trim();
+    const code = document.getElementById('forgotCode').value.trim();
+    const pwd = document.getElementById('forgotPwd').value;
+
+    if (!isValidPhone(phone)) {
+      showError('forgotPhoneErr', '请输入正确的手机号');
+      valid = false;
+    } else { hideError('forgotPhoneErr'); }
+
+    if (code.length !== 6) {
+      showError('forgotCodeErr', '请输入6位验证码');
+      valid = false;
+    } else {
+      const savedCode = localStorage.getItem(CODE_KEY + '_' + phone);
+      if (savedCode && code !== savedCode) {
+        showError('forgotCodeErr', '验证码错误');
+        valid = false;
+      } else { hideError('forgotCodeErr'); }
+    }
+
+    if (!isValidPwd(pwd)) {
+      showError('forgotPwdErr', '密码需6-20位，且包含字母和数字');
+      valid = false;
+    } else { hideError('forgotPwdErr'); }
+
+    if (!valid) return;
+
+    const btn = document.getElementById('forgotBtn');
+    setBtnLoading(btn, true);
+
+    setTimeout(() => {
+      setBtnLoading(btn, false);
+
+      // 更新密码
+      const users = getUsers();
+      const idx = users.findIndex(u => u.phone === phone);
+      if (idx !== -1) {
+        users[idx].password = btoa(pwd);
+        saveUsers(users);
+      }
+
+      localStorage.removeItem(CODE_KEY + '_' + phone);
+      switchPanel('resetSuccess');
+    }, 1000);
+  }
+
+  // ---- 退出登录 ----
+  function doLogout() {
+    clearSession();
+    document.getElementById('userDropdown').classList.remove('active');
+    document.getElementById('navBtns').style.display = 'flex';
+    document.getElementById('userMenuWrap').style.display = 'none';
+    alert('已退出登录');
+  }
+
+  // ---- 更新导航栏为已登录状态 ----
+  function updateNavForLogin(user) {
+    document.getElementById('navBtns').style.display = 'none';
+    document.getElementById('userMenuWrap').style.display = 'block';
+    document.getElementById('userAvatarSm').textContent = user.avatar || user.nickname[0];
+    document.getElementById('userDisplayName').textContent = user.nickname || '用户';
+  }
+
+  // ---- 页面加载时恢复登录状态 ----
+  (function restoreSession() {
+    const session = getSession();
+    if (session) {
+      const users = getUsers();
+      const user = users.find(u => u.id === session.userId);
+      if (user) {
+        updateNavForLogin(user);
+      } else {
+        clearSession();
+      }
+    }
+  })();
 
   /* ---- 滚动入场动画 ---- */
   const io = new IntersectionObserver((entries) => {
