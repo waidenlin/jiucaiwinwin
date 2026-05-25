@@ -481,7 +481,8 @@
     /* ===== 页脚 ===== */
     footer {
       background: var(--dark); border-top: 1px solid var(--border);
-      padding: 60px 40px 30px;
+      padding: 60px 40px 50px;
+      margin-bottom: 48px;
     }
     .footer-inner { max-width: 1280px; margin: 0 auto; }
     .footer-top {
@@ -514,9 +515,53 @@
     .footer-links a { font-size: 12px; color: var(--muted); text-decoration: none; }
     .footer-links a:hover { color: var(--text); }
 
+    /* ===== 底部悬浮注册引导条 ===== */
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 998;
+      background: linear-gradient(90deg, rgba(232,54,59,.95), rgba(192,57,43,.95));
+      backdrop-filter: blur(8px);
+      padding: 10px 20px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 -2px 20px rgba(0,0,0,.3);
+      animation: bottomBarIn .5s ease;
+    }
+    .bottom-bar.hidden { display: none; }
+    @keyframes bottomBarIn {
+      from { transform: translateY(100%); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .bottom-bar-inner {
+      display: flex; align-items: center; gap: 20px;
+      max-width: 1280px; width: 100%; justify-content: center;
+    }
+    .bottom-bar-text {
+      color: #fff; font-size: 14px; font-weight: 600;
+      white-space: nowrap;
+    }
+    .bottom-bar-btns { display: flex; gap: 10px; }
+    .bottom-bar-link {
+      color: rgba(255,255,255,.8); font-size: 13px;
+      text-decoration: none; padding: 5px 14px;
+      border: 1px solid rgba(255,255,255,.3); border-radius: 6px;
+      transition: all .2s;
+    }
+    .bottom-bar-link:hover { color: #fff; border-color: #fff; }
+    .bottom-bar-reg {
+      background: #fff; color: #c0392b; font-size: 13px;
+      font-weight: 700; text-decoration: none; padding: 5px 18px;
+      border-radius: 6px; transition: all .2s;
+    }
+    .bottom-bar-reg:hover { opacity: .9; transform: translateY(-1px); }
+    .bottom-bar-close {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: rgba(255,255,255,.6);
+      font-size: 16px; cursor: pointer; padding: 4px;
+    }
+    .bottom-bar-close:hover { color: #fff; }
+
     /* ===== 浮动客服 ===== */
     .float-btn {
-      position: fixed; bottom: 32px; right: 32px; z-index: 999;
+      position: fixed; bottom: 60px; right: 32px; z-index: 999;
       width: 52px; height: 52px; border-radius: 50%;
       background: linear-gradient(135deg, var(--red), var(--gold));
       border: none; color: #fff; font-size: 22px;
@@ -730,8 +775,11 @@
 
     /* ===== 响应式 ===== */
     @media (max-width: 900px) {
-      nav { padding: 0 20px; }
+      nav { padding: 0 16px; }
       .nav-links { display: none; }
+      .nav-btns { gap: 6px; }
+      .nav-btns .btn-outline { padding: 5px 12px; font-size: 12px; }
+      .nav-btns .btn-primary { padding: 5px 12px; font-size: 12px; }
       .hero-content  { grid-template-columns: 1fr; }
       .news-grid     { grid-template-columns: 1fr; }
       .contact-inner { grid-template-columns: 1fr; }
@@ -743,6 +791,11 @@
       .footer-top { grid-template-columns: 1fr; }
       .plans-grid { grid-template-columns: 1fr; }
       .form-row   { flex-direction: column; }
+      .btn-lg { font-size: 13px; padding: 10px 20px; }
+      .bottom-bar-text { font-size: 12px; }
+      .bottom-bar-link { padding: 4px 10px; font-size: 12px; }
+      .bottom-bar-reg  { padding: 4px 14px; font-size: 12px; }
+      footer { margin-bottom: 44px; }
     }
   </style>
 </head>
@@ -1454,6 +1507,18 @@
       <button class="auth-submit" onclick="switchPanel('login')" style="margin-bottom:10px;">立即登录</button>
     </div>
   </div>
+</div>
+
+<!-- 底部悬浮注册引导条 -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="bottom-bar-inner">
+    <span class="bottom-bar-text">🔥 新用户限时福利：注册即送7天VIP体验</span>
+    <div class="bottom-bar-btns">
+      <a href="javascript:void(0)" class="bottom-bar-link" onclick="openModal('login')">登录</a>
+      <a href="javascript:void(0)" class="bottom-bar-reg" onclick="openModal('register')">免费注册</a>
+    </div>
+  </div>
+  <button class="bottom-bar-close" onclick="closeBottomBar()">✕</button>
 </div>
 
 <!-- 浮动客服按钮 -->
@@ -2184,7 +2249,24 @@
     document.getElementById('userMenuWrap').style.display = 'block';
     document.getElementById('userAvatarSm').textContent = user.avatar || user.nickname[0];
     document.getElementById('userDisplayName').textContent = user.nickname || '用户';
+    // 已登录后隐藏底部引导条
+    const bar = document.getElementById('bottomBar');
+    if (bar) bar.classList.add('hidden');
   }
+
+  // ---- 底部引导条控制 ----
+  function closeBottomBar() {
+    document.getElementById('bottomBar').classList.add('hidden');
+  }
+  // 5秒后自动渐出底部引导条
+  setTimeout(function() {
+    const bar = document.getElementById('bottomBar');
+    if (bar && !bar.classList.contains('hidden')) {
+      bar.style.transition = 'opacity .5s';
+      bar.style.opacity = '0';
+      setTimeout(function() { bar.classList.add('hidden'); }, 500);
+    }
+  }, 8000);
 
   // ---- 页面加载时恢复登录状态 ----
   (function restoreSession() {
