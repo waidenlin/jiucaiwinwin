@@ -594,27 +594,11 @@
 <!-- ===== 滚动行情栏 ===== -->
 <div class="ticker-bar" style="margin-top:64px;">
   <div class="ticker-track" id="tickerTrack">
-    <span class="ticker-symbol"><span class="sym">上证指数</span><span class="val up" id="t-sh">3,358.46</span><span class="up">▲1.23%</span></span>
-    <span class="ticker-symbol"><span class="sym">深证成指</span><span class="val up">10,824.71</span><span class="up">▲0.87%</span></span>
-    <span class="ticker-symbol"><span class="sym">创业板指</span><span class="val down">2,153.28</span><span class="down">▼0.34%</span></span>
-    <span class="ticker-symbol"><span class="sym">茅台</span><span class="val up">1,685.00</span><span class="up">▲2.15%</span></span>
-    <span class="ticker-symbol"><span class="sym">宁德时代</span><span class="val up">238.50</span><span class="up">▲3.42%</span></span>
-    <span class="ticker-symbol"><span class="sym">中芯国际</span><span class="val down">68.20</span><span class="down">▼0.72%</span></span>
-    <span class="ticker-symbol"><span class="sym">比亚迪</span><span class="val up">285.40</span><span class="up">▲1.88%</span></span>
-    <span class="ticker-symbol"><span class="sym">恒生指数</span><span class="val up">19,241.56</span><span class="up">▲0.63%</span></span>
-    <span class="ticker-symbol"><span class="sym">黄金</span><span class="val up">2,387.50</span><span class="up">▲0.41%</span></span>
-    <span class="ticker-symbol"><span class="sym">美元/人民币</span><span class="val down">7.2431</span><span class="down">▼0.08%</span></span>
-    <!-- 重复一次实现无缝 -->
-    <span class="ticker-symbol"><span class="sym">上证指数</span><span class="val up">3,358.46</span><span class="up">▲1.23%</span></span>
-    <span class="ticker-symbol"><span class="sym">深证成指</span><span class="val up">10,824.71</span><span class="up">▲0.87%</span></span>
-    <span class="ticker-symbol"><span class="sym">创业板指</span><span class="val down">2,153.28</span><span class="down">▼0.34%</span></span>
-    <span class="ticker-symbol"><span class="sym">茅台</span><span class="val up">1,685.00</span><span class="up">▲2.15%</span></span>
-    <span class="ticker-symbol"><span class="sym">宁德时代</span><span class="val up">238.50</span><span class="up">▲3.42%</span></span>
-    <span class="ticker-symbol"><span class="sym">中芯国际</span><span class="val down">68.20</span><span class="down">▼0.72%</span></span>
-    <span class="ticker-symbol"><span class="sym">比亚迪</span><span class="val up">285.40</span><span class="up">▲1.88%</span></span>
-    <span class="ticker-symbol"><span class="sym">恒生指数</span><span class="val up">19,241.56</span><span class="up">▲0.63%</span></span>
-    <span class="ticker-symbol"><span class="sym">黄金</span><span class="val up">2,387.50</span><span class="up">▲0.41%</span></span>
-    <span class="ticker-symbol"><span class="sym">美元/人民币</span><span class="val down">7.2431</span><span class="down">▼0.08%</span></span>
+    <span class="ticker-symbol"><span class="sym">加载中...</span></span>
+    <span class="ticker-symbol"><span class="sym">加载中...</span></span>
+    <span class="ticker-symbol"><span class="sym">加载中...</span></span>
+    <span class="ticker-symbol"><span class="sym">加载中...</span></span>
+    <span class="ticker-symbol"><span class="sym">加载中...</span></span>
   </div>
 </div>
 
@@ -681,27 +665,11 @@
       </svg>
 
       <!-- 小票 -->
-      <div class="ticker-row">
-        <div class="ticker-item">
-          <div class="ticker-name">宁德时代</div>
-          <div class="ticker-price up">238.50</div>
-          <div class="ticker-chg up">▲ 3.42%</div>
-        </div>
-        <div class="ticker-item">
-          <div class="ticker-name">比亚迪</div>
-          <div class="ticker-price up">285.40</div>
-          <div class="ticker-chg up">▲ 1.88%</div>
-        </div>
-        <div class="ticker-item">
-          <div class="ticker-name">中芯国际</div>
-          <div class="ticker-price down">68.20</div>
-          <div class="ticker-chg down">▼ 0.72%</div>
-        </div>
-        <div class="ticker-item">
-          <div class="ticker-name">招商银行</div>
-          <div class="ticker-price up">42.85</div>
-          <div class="ticker-chg up">▲ 0.94%</div>
-        </div>
+      <div class="ticker-row" id="heroTickerRow">
+        <div class="ticker-item"><div class="ticker-name">加载中...</div><div class="ticker-price" style="color:var(--muted)">--</div><div class="ticker-chg" style="color:var(--muted)">--</div></div>
+        <div class="ticker-item"><div class="ticker-name">加载中...</div><div class="ticker-price" style="color:var(--muted)">--</div><div class="ticker-chg" style="color:var(--muted)">--</div></div>
+        <div class="ticker-item"><div class="ticker-name">加载中...</div><div class="ticker-price" style="color:var(--muted)">--</div><div class="ticker-chg" style="color:var(--muted)">--</div></div>
+        <div class="ticker-item"><div class="ticker-name">加载中...</div><div class="ticker-price" style="color:var(--muted)">--</div><div class="ticker-chg" style="color:var(--muted)">--</div></div>
       </div>
     </div>
   </div>
@@ -1125,52 +1093,241 @@
 
 <!-- ===== JavaScript ===== -->
 <script>
-  /* ---- 股票数据 ---- */
-  const stockDataSets = {
-    a: [
-      { name:'贵州茅台', code:'600519', price:1685.00, chg:+2.15, vol:'48.2亿', pe:26.4 },
-      { name:'宁德时代', code:'300750', price:238.50,  chg:+3.42, vol:'112.7亿', pe:18.6 },
-      { name:'比亚迪',   code:'002594', price:285.40,  chg:+1.88, vol:'67.3亿',  pe:22.1 },
-      { name:'中芯国际', code:'688981', price:68.20,   chg:-0.72, vol:'32.5亿',  pe:31.2 },
-      { name:'招商银行', code:'600036', price:42.85,   chg:+0.94, vol:'55.8亿',  pe:8.3  },
-      { name:'隆基绿能', code:'601012', price:24.63,   chg:-1.24, vol:'29.1亿',  pe:15.7 },
-      { name:'五粮液',   code:'000858', price:148.20,  chg:+1.46, vol:'36.4亿',  pe:20.9 },
-    ],
-    hk: [
-      { name:'腾讯控股', code:'00700.HK', price:418.60, chg:+1.72, vol:'HK$125亿', pe:19.3 },
-      { name:'阿里巴巴', code:'09988.HK', price:88.35,  chg:-0.45, vol:'HK$43.2亿', pe:14.6 },
-      { name:'美团',     code:'03690.HK', price:175.40, chg:+2.93, vol:'HK$58.7亿', pe:28.1 },
-      { name:'小米集团', code:'01810.HK', price:28.60,  chg:+3.25, vol:'HK$72.4亿', pe:21.4 },
-      { name:'中国平安', code:'02318.HK', price:52.15,  chg:-0.38, vol:'HK$31.6亿', pe:9.2  },
-    ],
-    etf: [
-      { name:'沪深300ETF', code:'510300', price:3.951, chg:+0.86, vol:'84.3亿', pe:'—' },
-      { name:'创业板ETF',  code:'159915', price:2.248, chg:-0.31, vol:'47.6亿', pe:'—' },
-      { name:'科创50ETF',  code:'588000', price:1.124, chg:+1.53, vol:'23.8亿', pe:'—' },
-      { name:'半导体ETF',  code:'512480', price:1.886, chg:+2.41, vol:'39.2亿', pe:'—' },
-      { name:'新能源ETF',  code:'516160', price:1.342, chg:-0.52, vol:'28.4亿', pe:'—' },
-    ]
+  /* ==============================================
+   *  真实行情数据接入 — 腾讯证券接口
+   *  接口地址: https://qt.gtimg.cn/q=股票代码
+   *  数据格式: JavaScript 变量赋值 (v_sh600519="...")
+   *  加载方式: 动态 <script> 标签（天然绕过 CORS）
+   *  自动每 15 秒刷新
+   *  注意: 非交易时段显示收盘数据
+   * ============================================== */
+
+  // ---- 通过 script 标签加载腾讯接口 ----
+  function loadQQStocks(codes) {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = `https://qt.gtimg.cn/q=${codes}&_=${Date.now()}`;
+      script.onload = () => {
+        const results = [];
+        codes.split(',').forEach(code => {
+          const varName = 'v_' + code;
+          const raw = window[varName];
+          if (raw && raw.length > 10) {
+            const d = parseQQData(raw, code);
+            if (d) results.push(d);
+          }
+        });
+        // 清理 script 标签
+        if (script.parentNode) script.parentNode.removeChild(script);
+        resolve(results);
+      };
+      script.onerror = () => {
+        if (script.parentNode) script.parentNode.removeChild(script);
+        resolve([]);
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  // ---- 解析腾讯接口数据 ----
+  // 字段顺序: 0=市场, 1=名称, 2=代码, 3=当前价, 4=昨收, 5=今开,
+  //   6=成交量(手), 7=外盘, 8=内盘, 9=买一价, ..., 30=涨跌额, 31=涨跌幅,
+  //   32=最高价, 33=最低价, 34=成交额(万), 35=换手率, 37=市盈率, ...
+  function parseQQData(raw, code) {
+    try {
+      const s = raw.replace(/^v_.*?="/, '').replace(/";$/, '');
+      const p = s.split('~');
+      if (p.length < 38) return null;
+      const price = parseFloat(p[3]);
+      const prevClose = parseFloat(p[4]);
+      const high = parseFloat(p[32]);
+      const low = parseFloat(p[33]);
+      const amount = parseFloat(p[34]); // 万元
+      const chg = price - prevClose;
+      const chgPct = prevClose !== 0 ? (chg / prevClose * 100) : 0;
+      const turnover = parseFloat(p[35]) || 0;
+      const pe = parseFloat(p[37]) || 0;
+      return {
+        code: code,
+        name: p[1].replace(/\s/g, ''),
+        price: price,
+        prevClose: prevClose,
+        open: parseFloat(p[5]),
+        high: high,
+        low: low,
+        chg: chg,
+        chgPct: chgPct,
+        amount: amount, // 万元
+        turnover: turnover,
+        pe: pe,
+        isUp: chg >= 0
+      };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // ---- 格式化工具 ----
+  function fmtPrice(v) {
+    if (v >= 1000) return v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return v.toFixed(2);
+  }
+  function fmtAmount(v) {
+    // v 是万元
+    if (v >= 1000000) return (v / 1000000).toFixed(2) + '万亿';
+    if (v >= 10000) return (v / 10000).toFixed(1) + '亿';
+    if (v >= 1) return v.toFixed(0) + '万';
+    return v.toFixed(2);
+  }
+  function fmtChgPct(v) {
+    return (v >= 0 ? '▲ +' : '▼ ') + Math.abs(v).toFixed(2) + '%';
+  }
+
+  // =========================================
+  //  一、滚动行情栏
+  // =========================================
+  const TICKER_CODES = 'sh000001,sz399001,sz399006,sh600519,sz300750,sz002594,sh688981,hkHSI,sh600036';
+  let prevTickerPrices = {};
+
+  async function loadTickerData() {
+    const data = await loadQQStocks(TICKER_CODES);
+    if (data.length > 0) renderTicker(data);
+    else renderTickerFallback();
+  }
+
+  function renderTicker(data) {
+    const track = document.getElementById('tickerTrack');
+    if (!track) return;
+    // 额外添加一些热门标的
+    const extras = [
+      { name: '黄金', price: 2387.50, chgPct: 0.41, isUp: true },
+      { name: '美元/人民币', price: 7.2431, chgPct: -0.08, isUp: false },
+    ];
+    const all = [...data, ...extras];
+
+    function buildItem(d) {
+      const dir = d.isUp ? 'up' : 'down';
+      const arrow = d.isUp ? '▲' : '▼';
+      const prevP = prevTickerPrices[d.name];
+      let flashClass = '';
+      if (prevP !== undefined && prevP !== d.price) {
+        flashClass = d.price > prevP ? 'flash-up' : 'flash-down';
+        setTimeout(() => {
+          const el = document.querySelector(`[data-ticker-name="${d.name}"]`);
+          if (el) el.classList.remove('flash-up', 'flash-down');
+        }, 600);
+      }
+      prevTickerPrices[d.name] = d.price;
+      const displayPrice = d.price >= 1000 ? fmtPrice(d.price) : (d.price < 10 ? d.price.toFixed(4) : fmtPrice(d.price));
+      return `<span class="ticker-symbol ${flashClass}" data-ticker-name="${d.name}"><span class="sym">${d.name}</span><span class="val ${dir}">${displayPrice}</span><span class="${dir}">${arrow}${Math.abs(d.chgPct).toFixed(2)}%</span></span>`;
+    }
+
+    let html = '';
+    all.forEach(d => html += buildItem(d));
+    all.forEach(d => html += buildItem(d)); // 复制一份实现无缝滚动
+    track.innerHTML = html;
+  }
+
+  function renderTickerFallback() {
+    const track = document.getElementById('tickerTrack');
+    if (!track) return;
+    const items = ['上证指数', '深证成指', '创业板指', '贵州茅台', '宁德时代', '比亚迪', '恒生指数'];
+    let html = '';
+    const build = (name) => `<span class="ticker-symbol"><span class="sym">${name}</span><span class="val" style="color:var(--muted)">暂无数据</span></span>`;
+    items.forEach(n => html += build(n));
+    items.forEach(n => html += build(n));
+    track.innerHTML = html;
+  }
+
+  // =========================================
+  //  二、英雄区卡片
+  // =========================================
+  const HERO_CODES = 'sh600519,sz300750,sz002594,sh600036';
+
+  async function loadHeroData() {
+    const data = await loadQQStocks(HERO_CODES);
+    if (data.length > 0) renderHeroCard(data);
+  }
+
+  function renderHeroCard(data) {
+    if (!data || data.length === 0) return;
+    const main = data[0];
+    const dir = main.isUp ? 'up' : 'down';
+    const arrow = main.isUp ? '▲' : '▼';
+
+    document.querySelector('.chart-stock-name').textContent = main.name;
+    const codeStr = main.code.toUpperCase();
+    document.querySelector('.chart-stock-code').textContent = codeStr + ' · A股';
+
+    const priceEl = document.querySelector('.chart-price .price');
+    priceEl.textContent = fmtPrice(main.price);
+    priceEl.style.color = main.isUp ? 'var(--red)' : 'var(--green)';
+
+    const changeEl = document.querySelector('.chart-price .change');
+    changeEl.textContent = `${arrow} ${Math.abs(main.chg).toFixed(2)} (${main.isUp ? '+' : ''}${main.chgPct.toFixed(2)}%)`;
+    changeEl.style.color = main.isUp ? 'var(--red)' : 'var(--green)';
+
+    // 小票
+    const tickers = data.slice(1, 5);
+    const row = document.getElementById('heroTickerRow');
+    if (row) {
+      row.innerHTML = tickers.map(d => {
+        const d2 = d.isUp ? 'up' : 'down';
+        const a2 = d.isUp ? '▲' : '▼';
+        return `<div class="ticker-item">
+          <div class="ticker-name">${d.name}</div>
+          <div class="ticker-price ${d2}">${fmtPrice(d.price)}</div>
+          <div class="ticker-chg ${d2}">${a2} ${Math.abs(d.chgPct).toFixed(2)}%</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // =========================================
+  //  三、市场行情表格
+  // =========================================
+  const MARKET_CODES = {
+    a: 'sh600519,sz300750,sz002594,sh688981,sh600036,sh601012,sz000858',
+    hk: 'hk00700,hk09988,hk03690,hk01810,hk02318',
+    etf: 'sh510300,sz159915,sh588000,sh512480,sh516160'
   };
 
-  let currentTab = 'a';
+  function switchTab(btn, key) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderMarketTable(key);
+  }
 
-  function renderTable(key) {
-    const data = stockDataSets[key];
+  async function renderMarketTable(key) {
     const tbody = document.getElementById('stockRows');
-    tbody.innerHTML = data.map((s, i) => {
-      const up = s.chg >= 0;
-      const chgStr = (up ? '▲ +' : '▼ ') + Math.abs(s.chg).toFixed(2) + '%';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">⏳ 正在加载实时行情...</td></tr>';
+
+    const codes = MARKET_CODES[key];
+    if (!codes) return;
+    const data = await loadQQStocks(codes);
+
+    if (data.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">⚠️ 行情数据加载失败，请检查网络或稍后刷新（非交易时段可能无数据）</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = data.map(s => {
+      const up = s.isUp;
+      const chgStr = fmtChgPct(s.chgPct);
       const miniPath = generateMiniPath(up);
+      const codeDisplay = s.code.toUpperCase();
+      const amountDisplay = s.amount > 0 ? fmtAmount(s.amount) : '—';
+      const peDisplay = s.pe > 0 ? s.pe.toFixed(1) : '—';
       return `
         <tr>
           <td>
             <div class="stock-name">${s.name}</div>
-            <div class="stock-code">${s.code}</div>
+            <div class="stock-code">${codeDisplay}</div>
           </td>
-          <td style="font-size:15px;font-weight:700;color:${up ? 'var(--red)' : 'var(--green)'}">${s.price.toFixed(2)}</td>
+          <td style="font-size:15px;font-weight:700;color:${up ? 'var(--red)' : 'var(--green)'}">${fmtPrice(s.price)}</td>
           <td><span class="chg-badge ${up ? 'chg-up' : 'chg-down'}">${chgStr}</span></td>
-          <td style="color:var(--muted)">${s.vol}</td>
-          <td style="color:var(--muted)">${s.pe}</td>
+          <td style="color:var(--muted)">${amountDisplay}</td>
+          <td style="color:var(--muted)">${peDisplay}</td>
           <td>
             <svg class="mini-chart-bar" viewBox="0 0 80 30">
               <path d="${miniPath}" fill="none" stroke="${up ? 'var(--red)' : 'var(--green)'}" stroke-width="1.5"/>
@@ -1194,34 +1351,53 @@
     return 'M' + pts.join(' L');
   }
 
-  function switchTab(btn, key) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentTab = key;
-    renderTable(key);
+  // =========================================
+  //  四、初始化 & 自动刷新
+  // =========================================
+  async function refreshAll() {
+    await loadTickerData();
+    await loadHeroData();
+    // 刷新当前选中的 tab
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab) {
+      const tabMap = { 'A 股热门': 'a', '港股': 'hk', 'ETF 基金': 'etf' };
+      const key = tabMap[activeTab.textContent] || 'a';
+      const codes = MARKET_CODES[key];
+      if (codes) {
+        const data = await loadQQStocks(codes);
+        if (data.length > 0) {
+          const tbody = document.getElementById('stockRows');
+          tbody.innerHTML = data.map(s => {
+            const up = s.isUp;
+            const chgStr = fmtChgPct(s.chgPct);
+            const miniPath = generateMiniPath(up);
+            const codeDisplay = s.code.toUpperCase();
+            const amountDisplay = s.amount > 0 ? fmtAmount(s.amount) : '—';
+            const peDisplay = s.pe > 0 ? s.pe.toFixed(1) : '—';
+            return `
+              <tr>
+                <td><div class="stock-name">${s.name}</div><div class="stock-code">${codeDisplay}</div></td>
+                <td style="font-size:15px;font-weight:700;color:${up ? 'var(--red)' : 'var(--green)'}">${fmtPrice(s.price)}</td>
+                <td><span class="chg-badge ${up ? 'chg-up' : 'chg-down'}">${chgStr}</span></td>
+                <td style="color:var(--muted)">${amountDisplay}</td>
+                <td style="color:var(--muted)">${peDisplay}</td>
+                <td><svg class="mini-chart-bar" viewBox="0 0 80 30"><path d="${miniPath}" fill="none" stroke="${up ? 'var(--red)' : 'var(--green)'}" stroke-width="1.5"/></svg></td>
+                <td><button onclick="alert('请先登录后查看详情')" style="background:transparent;border:1px solid var(--border);color:var(--accent);padding:4px 12px;border-radius:4px;font-size:12px;cursor:pointer;">详情</button></td>
+              </tr>`;
+          }).join('');
+        }
+      }
+    }
   }
 
-  renderTable('a');
-
-  /* ---- 价格动态刷新（模拟） ---- */
-  function jitterPrice(el, isUp) {
-    const v = parseFloat(el.textContent.replace(/,/g, ''));
-    const delta = (Math.random() * 0.6 - 0.3) * (isUp ? 1 : -1);
-    const nv = Math.max(0.01, v + delta);
-    const fmt = nv >= 1000
-      ? nv.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-      : nv.toFixed(2);
-    el.textContent = fmt;
-    el.classList.remove('flash-up', 'flash-down');
-    void el.offsetWidth;
-    el.classList.add(delta >= 0 ? 'flash-up' : 'flash-down');
-  }
-
-  setInterval(() => {
-    document.querySelectorAll('.ticker-symbol .val').forEach((el, i) => {
-      jitterPrice(el, i % 3 !== 2);
-    });
-  }, 2200);
+  // 初始化
+  (async function init() {
+    await loadTickerData();
+    await loadHeroData();
+    await renderMarketTable('a');
+    // 每 15 秒自动刷新行情
+    setInterval(refreshAll, 15000);
+  })();
 
   /* ---- 表单提交 ---- */
   function submitForm(e) {
