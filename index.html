@@ -903,6 +903,13 @@
     .stock-search-item:hover { background: var(--dark3); }
     .stock-search-item .ssi-name { color: var(--text); }
     .stock-search-item .ssi-code { color: var(--muted); font-size: 12px; }
+    .stock-search-manual { border-top: 1px solid var(--border); color: var(--accent); }
+    .stock-search-manual:hover { background: rgba(232,170,48,.1); }
+    .stock-search-manual .ssi-name { color: var(--accent); }
+    .stock-search-manual .ssi-code { color: var(--accent); opacity: .7; }
+    .stock-search-hint { padding: 8px 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+    .stock-search-hint b { color: var(--accent); }
+    .stock-search-tip { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
     /* 预警规则卡片 */
     .alert-rule-card {
@@ -983,6 +990,60 @@
     @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateX(50px); } }
 
     /* ===== AI 智能选股 ===== */
+    /* AI 自选股池 */
+    .ai-pool-section {
+      background: var(--dark3); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px; margin-bottom: 20px;
+    }
+    .ai-pool-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .ai-pool-header h3 { font-size: 14px; font-weight: 700; margin: 0; }
+    .ai-pool-tabs { display: flex; gap: 4px; }
+    .ai-pool-tab {
+      padding: 5px 14px; border-radius: 6px; font-size: 12px;
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      cursor: pointer; transition: all .2s;
+    }
+    .ai-pool-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
+    .ai-pool-content { display: none; }
+    .ai-pool-content.active { display: block; }
+    .ai-pool-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 36px; align-items: center; }
+    .ai-pool-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--dark2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 5px 10px; font-size: 12px;
+      color: var(--text); transition: all .2s;
+    }
+    .ai-pool-tag .tag-remove {
+      cursor: pointer; color: var(--muted); font-size: 14px; line-height: 1;
+      transition: color .15s;
+    }
+    .ai-pool-tag .tag-remove:hover { color: var(--red); }
+    .ai-pool-add {
+      display: flex; gap: 8px; margin-top: 10px;
+    }
+    .ai-pool-input {
+      flex: 1; padding: 8px 12px; border-radius: 8px;
+      background: var(--dark2); border: 1px solid var(--border);
+      color: var(--text); font-size: 13px; outline: none;
+    }
+    .ai-pool-input:focus { border-color: var(--accent); }
+    .ai-pool-input::placeholder { color: var(--muted); }
+    .ai-pool-btn {
+      padding: 8px 16px; border-radius: 8px;
+      background: var(--accent); color: var(--dark); font-size: 13px;
+      font-weight: 600; cursor: pointer; border: none; white-space: nowrap;
+    }
+    .ai-pool-btn:hover { opacity: .85; }
+    .ai-pool-hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
+    .ai-pool-recommend-info { font-size: 13px; color: var(--muted); padding: 8px 0; }
+    .ai-pool-dropdown {
+      position: absolute; z-index: 100; background: var(--dark2);
+      border: 1px solid var(--border); border-radius: 10px;
+      max-height: 200px; overflow-y: auto; display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,.4); min-width: 240px;
+    }
+    .ai-pool-dropdown.show { display: block; }
+
     .ai-section-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
     .ai-strategy-grid {
       display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
@@ -1867,8 +1928,9 @@
           <div class="alert-form-row">
             <div class="alert-form-group stock-search-wrap">
               <label>股票名称 / 代码</label>
-              <input type="text" class="alert-form-input" id="alertStockInput" placeholder="输入股票名称或代码搜索" autocomplete="off" oninput="searchStock(this.value)" onfocus="searchStock(this.value)" />
+              <input type="text" class="alert-form-input" id="alertStockInput" placeholder="输入名称或代码搜索（如 sh600519）" autocomplete="off" oninput="searchStock(this.value)" onfocus="searchStock(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmStockInput()}" />
               <div class="stock-search-dropdown" id="stockSearchDropdown"></div>
+              <div class="stock-search-tip">支持任意 A 股代码，格式：sh+6位 / sz+6位</div>
               <input type="hidden" id="alertStockCode" />
               <input type="hidden" id="alertStockName" />
             </div>
@@ -1906,6 +1968,29 @@
 
       <!-- ===== Tab 2: AI 智能选股 ===== -->
       <div class="feature-tab-content" id="aiTab">
+        <!-- 自选股池 -->
+        <div class="ai-pool-section">
+          <div class="ai-pool-header">
+            <h3>🎯 选择分析股票池</h3>
+            <div class="ai-pool-tabs">
+              <button class="ai-pool-tab active" onclick="switchPoolTab(this,'hot')">热门推荐</button>
+              <button class="ai-pool-tab" onclick="switchPoolTab(this,'custom')">我的自选</button>
+            </div>
+          </div>
+          <div class="ai-pool-content active" id="poolHotTab">
+            <div class="ai-pool-recommend-info">使用内置的 50 只热门 A 股进行全面分析，覆盖白酒、新能源、银行、医药等主要板块。</div>
+          </div>
+          <div class="ai-pool-content" id="poolCustomTab">
+            <div class="ai-pool-tags" id="poolTags"></div>
+            <div class="ai-pool-add" style="position:relative;">
+              <input type="text" class="ai-pool-input" id="poolStockInput" placeholder="输入名称或代码（如 sh600519）" autocomplete="off" oninput="searchStockForPool(this.value)" onfocus="searchStockForPool(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmPoolInput()}" />
+              <button class="ai-pool-btn" onclick="confirmPoolInput()">添加</button>
+              <div class="ai-pool-dropdown" id="poolDropdown"></div>
+            </div>
+            <div class="ai-pool-hint">支持任意 A 股代码（sh/sz + 6位），至少 3 只，最多 50 只</div>
+          </div>
+        </div>
+
         <div class="ai-section-title">选择分析策略</div>
         <div class="ai-strategy-grid" id="strategyGrid"></div>
 
@@ -2273,7 +2358,7 @@
     if (tab === 'ai') switchFeatureTab(btns[1], 'ai');
     else switchFeatureTab(btns[0], 'alert');
     if (tab === 'alert') renderAlertRules();
-    if (tab === 'ai') renderStrategyGrid();
+    if (tab === 'ai') { renderStrategyGrid(); renderPoolTags(); }
   }
 
   function closeFeatureModal() {
@@ -2342,14 +2427,45 @@
     const results = SEARCH_STOCKS.filter(s =>
       s.name.includes(keyword) || s.code.toLowerCase().includes(kw)
     ).slice(0, 8);
-    if (results.length === 0) { dropdown.classList.remove('show'); return; }
-    dropdown.innerHTML = results.map(s => `
-      <div class="stock-search-item" onclick="selectStock('${s.code}','${s.name}')">
-        <span class="ssi-name">${s.name}</span>
-        <span class="ssi-code">${s.code.toUpperCase()}</span>
-      </div>
-    `).join('');
+    let html = '';
+    if (results.length > 0) {
+      html += results.map(s => `
+        <div class="stock-search-item" onclick="selectStock('${s.code}','${s.name}')">
+          <span class="ssi-name">${s.name}</span>
+          <span class="ssi-code">${s.code.toUpperCase()}</span>
+        </div>
+      `).join('');
+    }
+    // 显示手动输入提示
+    const kwTrim = keyword.trim().toLowerCase();
+    const codeMatch = kwTrim.match(/^(sh|sz)\d{6}$/);
+    if (codeMatch) {
+      html += `<div class="stock-search-item stock-search-manual" onclick="confirmStockInput('${kwTrim}')">
+        <span class="ssi-name">确认添加 ${kwTrim.toUpperCase()}</span>
+        <span class="ssi-code">按回车或点击此处</span>
+      </div>`;
+    } else {
+      html += `<div class="stock-search-hint">
+        未找到匹配股票？可直接输入代码，如 <b>sh600519</b> 或 <b>sz000002</b>
+      </div>`;
+    }
+    dropdown.innerHTML = html;
     dropdown.classList.add('show');
+  }
+
+  // 支持任意股票代码输入（通过腾讯接口验证）
+  async function confirmStockInput(code) {
+    code = (code || document.getElementById('alertStockInput').value.trim().toLowerCase()).toLowerCase();
+    if (!/^(sh|sz)\d{6}$/.test(code)) {
+      showToast('请输入正确的股票代码格式：sh600519 或 sz000002', 'warn');
+      return;
+    }
+    const data = await loadQQStocks(code);
+    if (data.length > 0 && data[0].name) {
+      selectStock(code, data[0].name);
+    } else {
+      showToast('未找到该股票，请检查代码是否正确', 'warn');
+    }
   }
 
   function selectStock(code, name) {
@@ -2577,6 +2693,136 @@
    *  AI 智能选股系统
    * ============================================== */
 
+  // ---- AI 自选股池 ----
+  let aiPoolMode = 'hot'; // 'hot' 或 'custom'
+  const CUSTOM_POOL_KEY = 'jcww_ai_custom_pool';
+  const MAX_POOL_SIZE = 50;
+  const MIN_POOL_SIZE = 3;
+
+  function getCustomPool() {
+    try { return JSON.parse(localStorage.getItem(CUSTOM_POOL_KEY)) || []; }
+    catch(e) { return []; }
+  }
+  function saveCustomPool(pool) {
+    localStorage.setItem(CUSTOM_POOL_KEY, JSON.stringify(pool));
+  }
+
+  function switchPoolTab(btn, mode) {
+    aiPoolMode = mode;
+    document.querySelectorAll('.ai-pool-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('poolHotTab').classList.toggle('active', mode === 'hot');
+    document.getElementById('poolCustomTab').classList.toggle('active', mode === 'custom');
+    if (mode === 'custom') renderPoolTags();
+  }
+
+  function renderPoolTags() {
+    const pool = getCustomPool();
+    const container = document.getElementById('poolTags');
+    if (pool.length === 0) {
+      container.innerHTML = '<span style="color:var(--muted);font-size:13px;">暂无自选股，请在下方添加</span>';
+      return;
+    }
+    container.innerHTML = pool.map((s, i) => `
+      <span class="ai-pool-tag">
+        ${s.name} <span style="color:var(--muted)">${s.code.toUpperCase()}</span>
+        <span class="tag-remove" onclick="removeFromPool(${i})">✕</span>
+      </span>
+    `).join('');
+  }
+
+  function removeFromPool(index) {
+    const pool = getCustomPool();
+    pool.splice(index, 1);
+    saveCustomPool(pool);
+    renderPoolTags();
+  }
+
+  // 搜索股票（自选股池复用）
+  function searchStockForPool(keyword) {
+    const dropdown = document.getElementById('poolDropdown');
+    if (!keyword || keyword.length < 1) { dropdown.classList.remove('show'); return; }
+    const kw = keyword.toLowerCase();
+    const results = SEARCH_STOCKS.filter(s =>
+      s.name.includes(keyword) || s.code.toLowerCase().includes(kw)
+    ).slice(0, 8);
+    let html = '';
+    if (results.length > 0) {
+      html += results.map(s => `
+        <div class="stock-search-item" onclick="selectStockForPool('${s.code}','${s.name}')">
+          <span class="ssi-name">${s.name}</span>
+          <span class="ssi-code">${s.code.toUpperCase()}</span>
+        </div>
+      `).join('');
+    }
+    const kwTrim = keyword.trim().toLowerCase();
+    const codeMatch = kwTrim.match(/^(sh|sz)\d{6}$/);
+    if (codeMatch) {
+      html += `<div class="stock-search-item stock-search-manual" onclick="confirmPoolInput('${kwTrim}')">
+        <span class="ssi-name">确认添加 ${kwTrim.toUpperCase()}</span>
+        <span class="ssi-code">按回车或点击此处</span>
+      </div>`;
+    } else {
+      html += `<div class="stock-search-hint">未找到匹配股票？可直接输入代码，如 <b>sh600519</b></div>`;
+    }
+    dropdown.innerHTML = html;
+    dropdown.classList.add('show');
+  }
+
+  async function selectStockForPool(code, name) {
+    addToPool(code, name);
+    document.getElementById('poolStockInput').value = '';
+    document.getElementById('poolDropdown').classList.remove('show');
+  }
+
+  async function confirmPoolInput(code) {
+    code = (code || document.getElementById('poolStockInput').value.trim().toLowerCase()).toLowerCase();
+    if (!/^(sh|sz)\d{6}$/.test(code)) {
+      showToast('请输入正确的股票代码格式：sh600519 或 sz000002', 'warn');
+      return;
+    }
+    const pool = getCustomPool();
+    if (pool.some(s => s.code === code)) {
+      showToast('该股票已在自选池中', 'warn');
+      return;
+    }
+    // 通过腾讯接口验证并获取名称
+    const data = await loadQQStocks(code);
+    if (data.length > 0 && data[0].name) {
+      addToPool(code, data[0].name);
+      document.getElementById('poolStockInput').value = '';
+      document.getElementById('poolDropdown').classList.remove('show');
+    } else {
+      showToast('未找到该股票，请检查代码', 'warn');
+    }
+  }
+
+  function addToPool(code, name) {
+    const pool = getCustomPool();
+    if (pool.some(s => s.code === code)) {
+      showToast('该股票已在自选池中', 'warn');
+      return;
+    }
+    if (pool.length >= MAX_POOL_SIZE) {
+      showToast('自选股池最多 50 只', 'warn');
+      return;
+    }
+    pool.push({ code, name });
+    saveCustomPool(pool);
+    renderPoolTags();
+    showToast(`已添加 ${name}`, 'success');
+  }
+
+  // 点击外部关闭下拉
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.ai-pool-add')) {
+      document.getElementById('poolDropdown').classList.remove('show');
+    }
+    if (!e.target.closest('.stock-search-wrap')) {
+      document.getElementById('stockSearchDropdown').classList.remove('show');
+    }
+  });
+
   // ---- 股票池（50只热门A股，含基本面数据） ----
   const AI_STOCK_UNIVERSE = [
     {code:'sh600519',name:'贵州茅台',sector:'白酒',marketCap:21000,pe:30,roe:32,divYield:1.8},
@@ -2668,6 +2914,28 @@
   }
 
   function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+
+  // ---- 通用 Toast 提示 ----
+  function showToast(msg, type) {
+    type = type || 'info';
+    var container = document.getElementById('alertToastContainer');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = 'alertToastContainer';
+      container.style.cssText = 'position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;';
+      document.body.appendChild(container);
+    }
+    var toast = document.createElement('div');
+    toast.style.cssText = 'padding:12px 20px;border-radius:10px;font-size:13px;color:#fff;max-width:320px;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:toastIn .3s ease;';
+    toast.style.background = type === 'warn' ? '#e8363b' : type === 'success' ? '#28a745' : '#333';
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(function() {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity .3s';
+      setTimeout(function() { toast.remove(); }, 300);
+    }, 2500);
+  }
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
   // ---- 多因子评分引擎 ----
@@ -2718,6 +2986,15 @@
 
   // ---- 执行 AI 分析 ----
   async function runAIAnalysis() {
+    // 如果是自选股池模式，检查数量
+    if (aiPoolMode === 'custom') {
+      var pool = getCustomPool();
+      if (pool.length < MIN_POOL_SIZE) {
+        showToast('自选股至少需要 ' + MIN_POOL_SIZE + ' 只股票才能分析', 'warn');
+        return;
+      }
+    }
+
     var progressEl = document.getElementById('aiProgress');
     var progressText = document.getElementById('aiProgressText');
     var progressFill = document.getElementById('aiProgressFill');
@@ -2739,7 +3016,24 @@
       {text: '分析完成！', pct: 100}
     ];
 
-    var allCodes = AI_STOCK_UNIVERSE.map(function(s) { return s.code; });
+    // 根据模式选择股票池
+    var stockPool, allCodes;
+    if (aiPoolMode === 'custom') {
+      var customPool = getCustomPool();
+      stockPool = customPool.map(function(s) {
+        // 在热门池中查找基本面数据，找不到就用默认值
+        var found = AI_STOCK_UNIVERSE.find(function(u) { return u.code === s.code; });
+        return found || {
+          code: s.code, name: s.name, sector: '其他', marketCap: 1000,
+          pe: 0, roe: 0, divYield: 0
+        };
+      });
+      allCodes = customPool.map(function(s) { return s.code; });
+    } else {
+      stockPool = AI_STOCK_UNIVERSE;
+      allCodes = AI_STOCK_UNIVERSE.map(function(s) { return s.code; });
+    }
+
     var dataPromise = loadQQStocks(allCodes.join(','));
 
     for (var i = 0; i < steps.length; i++) {
@@ -2749,8 +3043,19 @@
     }
 
     var realtimeData = await dataPromise;
+
+    // 为自选股补充从腾讯接口获取的 PE 数据
+    if (aiPoolMode === 'custom') {
+      realtimeData.forEach(function(d) {
+        var s = stockPool.find(function(s) { return s.code === d.code; });
+        if (s && s.pe === 0 && d.pe > 0) {
+          s.pe = d.pe;
+        }
+      });
+    }
+
     var strategy = AI_STRATEGIES[currentStrategyKey];
-    var results = calculateScores(AI_STOCK_UNIVERSE, realtimeData, strategy);
+    var results = calculateScores(stockPool, realtimeData, strategy);
 
     await sleep(300);
     progressEl.style.display = 'none';
