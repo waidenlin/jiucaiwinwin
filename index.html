@@ -1046,7 +1046,7 @@
 
     .ai-section-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
     .ai-strategy-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
       margin-bottom: 24px;
     }
     .ai-strategy-card {
@@ -1144,6 +1144,49 @@
 
     /* 因子进度条 */
     .ai-factors { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-top: 16px; }
+
+    /* 走势分析面板 */
+    .trend-panel {
+      margin-top: 16px; padding: 16px;
+      background: rgba(0,0,0,.2); border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .trend-direction {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: 10px;
+      background: rgba(255,255,255,.03); border-left: 4px solid;
+      margin-bottom: 14px;
+    }
+    .td-icon { font-size: 28px; }
+    .td-info { flex: 1; }
+    .td-dir { font-size: 18px; font-weight: 800; }
+    .td-conf { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .td-stars { font-size: 14px; color: var(--gold); letter-spacing: 2px; }
+    .trend-levels { display: flex; gap: 12px; margin-bottom: 14px; }
+    .tl-item { flex: 1; background: var(--dark3); border-radius: 8px; padding: 10px 12px; text-align: center; }
+    .tl-label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .tl-val { font-size: 16px; font-weight: 700; }
+    .trend-predict { margin-bottom: 14px; }
+    .tp-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .tp-row { display: flex; gap: 10px; }
+    .tp-item { flex: 1; background: var(--dark3); border-radius: 8px; padding: 8px 10px; text-align: center; }
+    .tp-label { display: block; font-size: 11px; color: var(--muted); }
+    .tp-val { display: block; font-size: 15px; font-weight: 700; margin: 2px 0; }
+    .tp-chg { font-size: 11px; }
+    .trend-signals { margin-bottom: 14px; }
+    .ts-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .ts-row { display: flex; gap: 10px; }
+    .ts-item { flex: 1; background: var(--dark3); border-radius: 8px; padding: 8px 10px; text-align: center; }
+    .ts-label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+    .ts-val { font-size: 13px; font-weight: 600; }
+    .ts-up { color: var(--red); }
+    .ts-down { color: var(--green); }
+    .ts-neutral { color: var(--gold); }
+    .trend-advice {
+      font-size: 13px; color: var(--text); line-height: 1.7;
+      padding: 10px 14px; background: rgba(232,170,48,.06);
+      border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0;
+    }
     .ai-factor-row { display: flex; align-items: center; gap: 8px; }
     .ai-factor-label { font-size: 12px; color: var(--muted); width: 48px; flex-shrink: 0; }
     .ai-factor-track { flex: 1; height: 6px; background: var(--dark); border-radius: 3px; overflow: hidden; }
@@ -2880,7 +2923,8 @@
     value:    {name:'价值投资', desc:'低估值、高ROE、稳定分红', icon:'💎', weights:{momentum:15,valuation:35,volume:10,volatility:10,sectorHeat:10,size:20}},
     momentum: {name:'趋势动量', desc:'强势上涨、量价配合、板块热度', icon:'🚀', weights:{momentum:40,valuation:5,volume:25,volatility:10,sectorHeat:15,size:5}},
     growth:   {name:'成长精选', desc:'高增长、行业景气、低波动', icon:'📈', weights:{momentum:25,valuation:10,volume:10,volatility:20,sectorHeat:20,size:15}},
-    dividend: {name:'高股息策略', desc:'稳定分红、低估值、大盘蓝筹', icon:'🏦', weights:{momentum:5,valuation:25,volume:10,volatility:15,sectorHeat:5,size:40}}
+    dividend: {name:'高股息策略', desc:'稳定分红、低估值、大盘蓝筹', icon:'🏦', weights:{momentum:5,valuation:25,volume:10,volatility:15,sectorHeat:5,size:40}},
+    trend:    {name:'后续走势', desc:'趋势研判、支撑阻力、方向预判', icon:'🔮', weights:{momentum:30,valuation:5,volume:25,volatility:20,sectorHeat:15,size:5}}
   };
 
   let currentStrategyKey = 'value';
@@ -2979,9 +3023,80 @@
           sectorHeat: Math.round(Math.min(sectorHeatScore, 100)),
           size: Math.round(sizeScore)
         },
-        totalScore: totalScore
+        totalScore: totalScore,
+        trend: generateTrendAnalysis(stock, rt, price, chgPct, turnover, momentumScore, volumeScore, volatilityScore, sectorHeatScore)
       };
     }).sort(function(a, b) { return b.totalScore - a.totalScore; });
+  }
+
+  // ---- 走势分析引擎 ----
+  function generateTrendAnalysis(stock, rt, price, chgPct, turnover, momentumScore, volumeScore, volatilityScore, sectorHeatScore) {
+    // 趋势方向判断
+    var trendDir;
+    var trendConfidence;
+    if (momentumScore >= 70 && volumeScore >= 55) {
+      trendDir = 'up'; trendConfidence = Math.min(92, 65 + momentumScore * 0.2 + volumeScore * 0.1);
+    } else if (momentumScore >= 55) {
+      trendDir = 'up'; trendConfidence = 50 + momentumScore * 0.15;
+    } else if (momentumScore <= 30 && volumeScore <= 35) {
+      trendDir = 'down'; trendConfidence = Math.min(88, 60 + (100 - momentumScore) * 0.15);
+    } else if (momentumScore <= 45) {
+      trendDir = 'down'; trendConfidence = 45 + (50 - momentumScore) * 0.2;
+    } else {
+      trendDir = 'sideways'; trendConfidence = 40 + Math.random() * 20;
+    }
+    trendConfidence = Math.round(clamp(trendConfidence, 30, 92));
+
+    // 支撑位和阻力位（基于当前价格估算）
+    var volatility = Math.max(Math.abs(chgPct), 1.5);
+    var supportLevel = price * (1 - volatility * 0.015 - Math.random() * 0.01);
+    var resistLevel = price * (1 + volatility * 0.015 + Math.random() * 0.01);
+
+    // 趋势强度（1-5星）
+    var strength = trendDir === 'sideways' ? 2 :
+      Math.min(5, Math.round(trendConfidence / 20));
+
+    // 短期预判（3日/5日/10日）
+    var bias = trendDir === 'up' ? 0.003 : trendDir === 'down' ? -0.003 : 0;
+    var d3 = price * (1 + bias * 1.5 + (Math.random() - 0.5) * 0.008);
+    var d5 = price * (1 + bias * 2.5 + (Math.random() - 0.5) * 0.015);
+    var d10 = price * (1 + bias * 4 + (Math.random() - 0.5) * 0.025);
+
+    // 信号（MACD/KDJ/RSI 模拟）
+    var macdSignal = momentumScore >= 55 ? '金叉' : '死叉';
+    var kdjSignal = turnover >= 4 ? '超买' : turnover <= 1.5 ? '超卖' : '中性';
+    var rsiValue = clamp(50 + chgPct * 5 + (Math.random() - 0.5) * 10, 20, 80);
+    var rsiSignal = rsiValue >= 65 ? '偏强' : rsiValue <= 35 ? '偏弱' : '中性';
+
+    // 走势建议
+    var suggestion;
+    if (trendDir === 'up' && trendConfidence >= 65) {
+      suggestion = '短期趋势偏多，可关注突破阻力位后的上行空间，注意控制仓位';
+    } else if (trendDir === 'up') {
+      suggestion = '短期偏多但力度有限，建议观望确认后再考虑介入';
+    } else if (trendDir === 'down' && trendConfidence >= 60) {
+      suggestion = '短期趋势偏空，建议等待支撑位企稳信号后再考虑布局';
+    } else if (trendDir === 'down') {
+      suggestion = '走势偏弱，建议谨慎观望，关注成交量变化';
+    } else {
+      suggestion = '短期震荡整理，建议等待方向明确后再操作';
+    }
+
+    return {
+      direction: trendDir,
+      confidence: trendConfidence,
+      strength: strength,
+      support: supportLevel,
+      resistance: resistLevel,
+      predict3d: d3,
+      predict5d: d5,
+      predict10d: d10,
+      macd: macdSignal,
+      kdj: kdjSignal,
+      rsi: Math.round(rsiValue),
+      rsiSignal: rsiSignal,
+      suggestion: suggestion
+    };
   }
 
   // ---- 执行 AI 分析 ----
@@ -3117,6 +3232,17 @@
 
   // ---- AI 推荐理由生成 ----
   function generateAIReason(stock, strategy) {
+    // 走势策略使用专门的走势分析理由
+    if (strategy.name === '后续走势' && stock.trend) {
+      var t = stock.trend;
+      var dirText = t.direction === 'up' ? '看多' : t.direction === 'down' ? '看空' : '震荡';
+      var stars = '★'.repeat(t.strength) + '☆'.repeat(5 - t.strength);
+      var reasons = [];
+      reasons.push('趋势方向：<strong style="color:' + (t.direction === 'up' ? 'var(--red)' : t.direction === 'down' ? 'var(--green)' : 'var(--gold)') + '">' + dirText + '</strong>，置信度 ' + t.confidence + '%，强度 ' + stars);
+      reasons.push('支撑位 ' + t.support.toFixed(2) + ' / 阻力位 ' + t.resistance.toFixed(2) + '，MACD ' + t.macd + '，KDJ ' + t.kdj + '，RSI ' + t.rsi + '(' + t.rsiSignal + ')');
+      reasons.push(t.suggestion);
+      return reasons.join('；');
+    }
     var reasons = [];
     var f = stock.factors;
     if (f.momentum >= 65) reasons.push('近期走势强劲，涨幅 ' + stock.chgPct.toFixed(1) + '%，动量因子得分 ' + f.momentum);
@@ -3132,7 +3258,8 @@
 
   // ---- 渲染分析结果 ----
   function renderAIResults(results, strategy) {
-    document.getElementById('aiResultsCount').textContent = '共分析 ' + AI_STOCK_UNIVERSE.length + ' 只，推荐 TOP ' + results.length;
+    var isTrend = strategy.name === '后续走势';
+    document.getElementById('aiResultsCount').textContent = '共分析 ' + (aiPoolMode === 'custom' ? getCustomPool().length : AI_STOCK_UNIVERSE.length) + ' 只，推荐 TOP ' + results.length;
     var container = document.getElementById('aiResultsList');
     var factorLabels = ['动量','估值','量能','稳定','热度','市值'];
     var factorKeys = ['momentum','valuation','volume','volatility','sectorHeat','size'];
@@ -3153,6 +3280,47 @@
       var radarSVG = generateRadarSVG(stock.factors);
       var reason = generateAIReason(stock, strategy);
 
+      // 走势分析面板（仅走势策略显示）
+      var trendPanel = '';
+      if (isTrend && stock.trend) {
+        var t = stock.trend;
+        var dirIcon = t.direction === 'up' ? '📈' : t.direction === 'down' ? '📉' : '➡️';
+        var dirText = t.direction === 'up' ? '看多' : t.direction === 'down' ? '看空' : '震荡';
+        var dirColor = t.direction === 'up' ? 'var(--red)' : t.direction === 'down' ? 'var(--green)' : 'var(--gold)';
+        var stars = '★'.repeat(t.strength) + '☆'.repeat(5 - t.strength);
+        trendPanel = '<div class="trend-panel">' +
+          '<div class="trend-direction" style="border-color:' + dirColor + '">' +
+            '<div class="td-icon">' + dirIcon + '</div>' +
+            '<div class="td-info">' +
+              '<div class="td-dir" style="color:' + dirColor + '">' + dirText + '</div>' +
+              '<div class="td-conf">置信度 ' + t.confidence + '%</div>' +
+            '</div>' +
+            '<div class="td-stars">' + stars + '</div>' +
+          '</div>' +
+          '<div class="trend-levels">' +
+            '<div class="tl-item"><span class="tl-label">支撑位</span><span class="tl-val" style="color:var(--green)">' + t.support.toFixed(2) + '</span></div>' +
+            '<div class="tl-item"><span class="tl-label">阻力位</span><span class="tl-val" style="color:var(--red)">' + t.resistance.toFixed(2) + '</span></div>' +
+          '</div>' +
+          '<div class="trend-predict">' +
+            '<div class="tp-title">短期价格预判</div>' +
+            '<div class="tp-row">' +
+              '<div class="tp-item"><span class="tp-label">3日</span><span class="tp-val" style="color:' + (t.predict3d >= stock.price ? 'var(--red)' : 'var(--green)') + '">' + t.predict3d.toFixed(2) + '</span><span class="tp-chg">' + (t.predict3d >= stock.price ? '+' : '') + ((t.predict3d - stock.price) / stock.price * 100).toFixed(2) + '%</span></div>' +
+              '<div class="tp-item"><span class="tp-label">5日</span><span class="tp-val" style="color:' + (t.predict5d >= stock.price ? 'var(--red)' : 'var(--green)') + '">' + t.predict5d.toFixed(2) + '</span><span class="tp-chg">' + (t.predict5d >= stock.price ? '+' : '') + ((t.predict5d - stock.price) / stock.price * 100).toFixed(2) + '%</span></div>' +
+              '<div class="tp-item"><span class="tp-label">10日</span><span class="tp-val" style="color:' + (t.predict10d >= stock.price ? 'var(--red)' : 'var(--green)') + '">' + t.predict10d.toFixed(2) + '</span><span class="tp-chg">' + (t.predict10d >= stock.price ? '+' : '') + ((t.predict10d - stock.price) / stock.price * 100).toFixed(2) + '%</span></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="trend-signals">' +
+            '<div class="ts-title">技术信号</div>' +
+            '<div class="ts-row">' +
+              '<div class="ts-item"><span class="ts-label">MACD</span><span class="ts-val ' + (t.macd === '金叉' ? 'ts-up' : 'ts-down') + '">' + t.macd + '</span></div>' +
+              '<div class="ts-item"><span class="ts-label">KDJ</span><span class="ts-val ' + (t.kdj === '超卖' ? 'ts-up' : t.kdj === '超买' ? 'ts-down' : 'ts-neutral') + '">' + t.kdj + '</span></div>' +
+              '<div class="ts-item"><span class="ts-label">RSI</span><span class="ts-val">' + t.rsi + ' <small style="color:var(--muted)">' + t.rsiSignal + '</small></span></div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="trend-advice">' + t.suggestion + '</div>' +
+        '</div>';
+      }
+
       return '<div class="ai-result-card">' +
         '<div class="ai-result-top">' +
           '<div class="ai-rank ' + rankClass + '">' + (idx + 1) + '</div>' +
@@ -3165,7 +3333,8 @@
           '</div>' +
           scoreBadgeSVG(stock.totalScore) +
         '</div>' +
-        '<div class="ai-factors">' + factorBars + '</div>' +
+        factorBars +
+        trendPanel +
         '<button class="ai-detail-toggle" onclick="toggleDetail(this)">🔽 查看雷达图 & AI 推荐理由</button>' +
         '<div class="ai-detail-content">' +
           '<div class="ai-radar-wrap">' + radarSVG + '</div>' +
